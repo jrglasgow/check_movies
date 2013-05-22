@@ -28,18 +28,18 @@ def get_theater_shows(theater):
 def send_message(message):
   server=smtplib.SMTP('smtp.gmail.com:587')
   server.starttls()
-  server.login(check_movies_list.mail_user, check_movies_list.mail_password)
+  server.login(config.mail_user, config.mail_password)
   senddate=datetime.strftime(datetime.now(), '%Y-%m-%d')
   subject="Movies Available in Chosen Theaters"
-  m="Date: %s\r\nFrom: %s\r\nTo: %s\r\nSubject: %s\r\nX-Mailer: check_movies.py\r\nContent-Type: text/html\r\n\r\n" % (senddate, 'Movie notifications <james+movies@jrglasgow.com>', check_movies_list.mail_recipient, subject)
+  m="Date: %s\r\nFrom: %s\r\nTo: %s\r\nSubject: %s\r\nX-Mailer: check_movies.py\r\nContent-Type: text/html\r\n\r\n" % (senddate, 'Movie notifications <james+movies@jrglasgow.com>', config.mail_recipient, subject)
 
-  server.sendmail('james+movies@jrglasgow.com', check_movies_list.mail_recipient, m+message)
+  server.sendmail('james+movies@jrglasgow.com', config.mail_recipient, m+message)
   server.quit()
 
 if __name__ == '__main__':
   shows = ''
   # first get a list of all the shows that are currently in the theaters
-  page = urllib2.urlopen(imdb_movie_page).read().split('<script')
+  page = urllib2.urlopen(imdb_movie_page).read()#.split('<script')
 
   # strip out all <script> tags from the page since we won't be needing them and
   # they have caused problems
@@ -65,10 +65,10 @@ if __name__ == '__main__':
     theater_shows[theater_name] = get_theater_shows(theater)
 
   #now that we know what is showing in the area we check against our list
-  for theater in check_movies_list.theaters:
+  for theater in config.theaters:
     if (theater in theater_shows):
       this_theaters_shows = ''
-      for movie_id, movie_title in check_movies_list.movies.iteritems():
+      for movie_id, movie_title in config.movies.iteritems():
         if (movie_id in theater_shows[theater]):
           this_theaters_shows += theater_shows[theater][movie_id]
           #shows += "\t%s - <a href=\"http://www.imdb.com/title/%s\">%s</a>\n" % (theater, movie_id, movie_title)
