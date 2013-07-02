@@ -7,7 +7,7 @@ import config, smtplib, string, re
 from datetime import datetime
 
 
-imdb_movie_page = 'http://www.imdb.com/showtimes/cinemas/US/83651'
+
 message = ''
 
 def get_theater_shows(theater):
@@ -26,20 +26,20 @@ def get_theater_shows(theater):
   return movies
 
 def send_message(message):
-  server=smtplib.SMTP('smtp.gmail.com:587')
+  server = smtplib.SMTP('smtp.gmail.com:587')
   server.starttls()
   server.login(config.mail_user, config.mail_password)
-  senddate=datetime.strftime(datetime.now(), '%Y-%m-%d')
-  subject="Movies Available in Chosen Theaters"
-  m="Date: %s\r\nFrom: %s\r\nTo: %s\r\nSubject: %s\r\nX-Mailer: check_movies.py\r\nContent-Type: text/html\r\n\r\n" % (senddate, 'Movie notifications <james+movies@jrglasgow.com>', config.mail_recipient, subject)
+  senddate = datetime.strftime(datetime.now(), '%Y-%m-%d')
+  subject = "Movies Available in Chosen Theaters"
+  headers = "Date: %s\r\nFrom: %s\r\nTo: %s\r\nSubject: %s\r\nX-Mailer: check_movies.py\r\nContent-Type: text/html\r\n\r\n" % (senddate, 'Movie notifications <%s>' % config.mail_from_address, config.mail_recipient, subject, )
 
-  server.sendmail('james+movies@jrglasgow.com', config.mail_recipient, m+message)
+  server.sendmail(config.mail_from_address, config.mail_recipient, headers + message)
   server.quit()
 
 if __name__ == '__main__':
   shows = ''
   # first get a list of all the shows that are currently in the theaters
-  page = urllib2.urlopen(imdb_movie_page).read()#.split('<script')
+  page = urllib2.urlopen(config.imdb_movie_page).read()#.split('<script')
 
   # strip out all <script> tags from the page since we won't be needing them and
   # they have caused problems
@@ -73,7 +73,7 @@ if __name__ == '__main__':
           this_theaters_shows += theater_shows[theater][movie_id]
           #shows += "\t%s - <a href=\"http://www.imdb.com/title/%s\">%s</a>\n" % (theater, movie_id, movie_title)
       if (this_theaters_shows != ''):
-        shows += "<hr/>%s<br/>%s" % (theater, this_theaters_shows)
+        shows += "<hr/><h2 class=\"theater-name\">%s</h2><br/>%s" % (theater, this_theaters_shows)
 
   if (shows):
     message =  "The following movies are currently available in your chosen theaters:\n\n"

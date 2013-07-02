@@ -2,7 +2,7 @@
 
 #
 theaters = ['Northern Lights Cinema Grill', 'Nampa Reel Theatre', 'Country Club Reel Theatre - Boise']
-
+imdb_movie_page = 'http://www.imdb.com/showtimes/cinemas/US/83651'
 
 movies = {}
 movies['tt1300854'] = 'Iron Man 3 (2013)'
@@ -30,3 +30,4 @@ movies['tt1502712'] = 'The Fantastic Four (2015)'
 mail_user = 'smtp user'
 mail_password = 'smtp password'
 mail_recipient = 'james@example.com'
+mail_from_address = 'movie_notifications@example.com'
